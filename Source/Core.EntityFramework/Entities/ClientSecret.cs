@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Thinktecture.IdentityServer.EntityFramework.Entities
 {
@@ -33,8 +34,21 @@ namespace Thinktecture.IdentityServer.EntityFramework.Entities
         [StringLength(2000)]
         public virtual string Description { get; set; }
 
-        public virtual DateTimeOffset? Expiration { get; set; }
-        
+        [NotMapped]
+        public virtual DateTimeOffset? Expiration
+        {
+            get { return ExpirationDate == null ? (DateTimeOffset?) null : new DateTimeOffset(ExpirationDate.Value, TimeSpan.FromSeconds(ExpirationOffset.Value)); }
+            set
+            {
+                ExpirationDate = value == null ? (DateTime?) null : value.Value.DateTime;
+                ExpirationOffset = value == null ? (int?) null : (int?) value.Value.Offset.TotalSeconds;
+            }
+        }
+
+        public virtual DateTime? ExpirationDate { get; set; }
+
+        public virtual int? ExpirationOffset { get; set; }
+
         public virtual Client Client { get; set; }
     }
 }

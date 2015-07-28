@@ -38,7 +38,22 @@ namespace Thinktecture.IdentityServer.EntityFramework.Entities
         [DataType(DataType.Text)]
         public virtual string JsonCode { get; set; }
 
+        [NotMapped]
+        public virtual DateTimeOffset Expiry
+        { 
+            get { return new DateTimeOffset(ExpirationDate, TimeSpan.FromSeconds(ExpirationOffset)); }
+            set
+            {
+                ExpirationDate = value.DateTime;
+                ExpirationOffset = (int) value.Offset.TotalSeconds;
+            }
+        }
+
         [Required]
-        public virtual DateTimeOffset Expiry { get; set; }
+        public virtual DateTime ExpirationDate { get; set; }
+
+        [Required]
+        public virtual int ExpirationOffset { get; set; }
+
     }
 }
